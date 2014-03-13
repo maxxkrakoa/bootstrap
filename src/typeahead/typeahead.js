@@ -114,7 +114,11 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
           if (onCurrentRequest && hasFocus) {
             if (matches.length > 0) {
 
-              scope.activeIdx = 0;
+              if (isEditable) {
+                scope.activeIdx = -1;
+              } else {
+                scope.activeIdx = 0;
+              }
               scope.matches.length = 0;
 
               //transform labels
@@ -219,11 +223,13 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
         var locals = {};
         var model, item;
 
-        locals[parserResult.itemName] = item = scope.matches[activeIdx].model;
-        model = parserResult.modelMapper(originalScope, locals);
-        $setModelValue(originalScope, model);
-        modelCtrl.$setValidity('editable', true);
-
+        if (activeIdx >= 0) {
+          locals[parserResult.itemName] = item = scope.matches[activeIdx].model;
+          model = parserResult.modelMapper(originalScope, locals);
+          $setModelValue(originalScope, model);
+          modelCtrl.$setValidity('editable', true);
+        }
+        
         onSelectCallback(originalScope, {
           $item: item,
           $model: model,
